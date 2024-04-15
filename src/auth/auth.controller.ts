@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { SignupDto } from './dtos/singup.dto';
+import { SignupDto, LoginDto } from './dtos';
 import { AuthService } from './auth.service';
 
 @Controller('/api/auth')
@@ -11,9 +11,31 @@ export class AuthController {
   async signup(@Body() signupDto: SignupDto) {
     try {
       const user = await this.authService.signup(signupDto);
-      return user;
+
+      return {
+        data: {
+          user,
+        },
+      };
     } catch (error) {
-      throw error;
+      return error;
+    }
+  }
+
+  @Post('local/login')
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() loginDto: LoginDto) {
+    try {
+      const { user, tokens } = await this.authService.login(loginDto);
+
+      return {
+        data: {
+          user,
+          tokens,
+        },
+      };
+    } catch (error) {
+      return error;
     }
   }
 }
