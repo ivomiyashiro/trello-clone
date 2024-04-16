@@ -14,8 +14,6 @@ import { LoginDto, SignupDto } from './dtos';
 import { config } from 'src/lib/config/config';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
 
-const DEFAULT_LOCAL_PROVIDER = 'LOCAL';
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -34,8 +32,16 @@ export class AuthService {
         password: hashedPassword,
         accounts: {
           create: {
-            provider: DEFAULT_LOCAL_PROVIDER,
-            providerAccountId: DEFAULT_LOCAL_PROVIDER,
+            provider: {
+              connectOrCreate: {
+                where: {
+                  name: 'LOCAL',
+                },
+                create: {
+                  name: 'LOCAL',
+                },
+              },
+            },
           },
         },
       },
@@ -103,9 +109,8 @@ export class AuthService {
       where: {
         userId,
         refreshToken: { not: null },
-        accessToken: { not: null },
       },
-      data: { refreshToken: null, accessToken: null },
+      data: { refreshToken: null },
     });
 
     return true;
@@ -150,14 +155,10 @@ export class AuthService {
   // Helpers ===>
   private async updateDbTokens(accountId: string, tokens: Tokens) {
     const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
-    const hashedAccessToken = await bcrypt.hash(tokens.accessToken, 10);
 
     await this.prismaService.account.update({
       where: { id: accountId },
-      data: {
-        refreshToken: hashedRefreshToken,
-        accessToken: hashedAccessToken,
-      },
+      data: { refreshToken: hashedRefreshToken },
     });
   }
 

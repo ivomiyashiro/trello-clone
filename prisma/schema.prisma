@@ -7,29 +7,43 @@ datasource db {
   url      = env("DATABASE_URL_DEVELOPMENT")
 }
 
+enum Providers {
+  LOCAL
+  GOOGLE
+  GITHUB
+}
+
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  provider           String
-  providerAccountId  String  
-  refreshToken       String?
-  accessToken        String?
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  @@unique([provider, providerAccountId])
+  id           String  @id @default(cuid())
+  userId       String
+  providerId   String
+  refreshToken String?
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider Provider @relation(fields: [providerId], references: [id])
+
   @@map("accounts")
 }
- 
+
 model User {
-  id            String      @id @default(cuid())
-  name          String?
-  email         String      @unique
-  password      String
-  image         String?
-  createdAt     DateTime?   @default(now())
-  updatedAt     DateTime?   @default(now())
-  accounts      Account[]
- 
+  id        String    @id @default(cuid())
+  name      String?
+  email     String    @unique
+  password  String
+  image     String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+
+  accounts  Account[]
+
   @@map("users")
+}
+
+model Provider {
+  id      String    @id @default(cuid())
+  name    Providers @unique
+
+  accounts Account[]
+
+  @@map("providers")
 }
