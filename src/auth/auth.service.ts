@@ -11,6 +11,7 @@ import { JwtPayload, Tokens } from './auth.types';
 
 import { LoginDto, SignupDto } from './dtos';
 
+import { config } from 'src/lib/config/config';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
 
 const DEFAULT_LOCAL_PROVIDER = 'LOCAL';
@@ -18,9 +19,9 @@ const DEFAULT_LOCAL_PROVIDER = 'LOCAL';
 @Injectable()
 export class AuthService {
   constructor(
+    private configService: ConfigService,
     private prismaService: PrismaService,
     private jwtService: JwtService,
-    private configService: ConfigService,
   ) {}
 
   async signup(signupDto: SignupDto) {
@@ -97,9 +98,22 @@ export class AuthService {
     };
   }
 
-  async refreshTokens(accountId: string, refreshToken: string) {
+  async logout(userId: string) {
+    await this.prismaService.account.updateMany({
+      where: {
+        userId,
+        refreshToken: { not: null },
+        accessToken: { not: null },
+      },
+      data: { refreshToken: null, accessToken: null },
+    });
+
+    return true;
+  }
+
+  async generateToken(userId: string, refreshToken: string) {
     const account = await this.prismaService.account.findFirstOrThrow({
-      where: { id: accountId },
+      where: { userId },
       include: { user: true },
     });
 
@@ -109,7 +123,7 @@ export class AuthService {
       throw new ForbiddenException('Access Denied.');
     }
 
-    const rtMatches = await bcrypt.compare(account.refreshToken, refreshToken);
+    const rtMatches = await bcrypt.compare(refreshToken, account.refreshToken);
 
     if (!rtMatches) throw new ForbiddenException('Access Denied.');
 
@@ -120,7 +134,7 @@ export class AuthService {
       image: user.image,
     });
 
-    await this.updateDbTokens(accountId, tokens);
+    await this.updateDbTokens(account.id, tokens);
 
     return {
       user: {
@@ -133,6 +147,7 @@ export class AuthService {
     };
   }
 
+  // Helpers ===>
   private async updateDbTokens(accountId: string, tokens: Tokens) {
     const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
     const hashedAccessToken = await bcrypt.hash(tokens.accessToken, 10);
@@ -150,11 +165,11 @@ export class AuthService {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-        expiresIn: '15m',
+        expiresIn: config.ACCESS_TOKEN_EXP_TIME,
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-        expiresIn: '7d',
+        expiresIn: config.REFRESH_TOKEN_EXP_TIME,
       }),
     ]);
 
