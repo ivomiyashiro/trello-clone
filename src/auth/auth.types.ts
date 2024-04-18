@@ -1,6 +1,9 @@
-export interface Tokens {
-  accessToken: string;
-  refreshToken: string;
+import { Account, User } from '@prisma/client';
+
+export interface AuthRequest extends Request {
+  user?: User & {
+    accounts?: Account[];
+  };
 }
 
 export interface JwtPayload {

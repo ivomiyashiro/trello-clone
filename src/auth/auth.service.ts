@@ -7,11 +7,12 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 
-import { JwtPayload, Tokens } from './auth.types';
-
-import { LoginDto, SignupDto } from './dtos';
+import { Account, AccountProvider, Providers, User } from '@prisma/client';
+import { AuthRequest, JwtPayload } from './auth.types';
 
 import { config } from 'src/lib/config/config';
+
+import { LoginDto, SignupDto } from './dtos';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
 
 @Injectable()
@@ -23,35 +24,45 @@ export class AuthService {
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const hashedPassword = await bcrypt.hash(signupDto.password, 10);
+    const localProvider = await this.getOrCreateAuthProvider('local');
 
-    const user = await this.prismaService.user.create({
-      data: {
-        name: signupDto.name,
+    const user = await this.prismaService.user.findUnique({
+      where: {
         email: signupDto.email,
-        password: hashedPassword,
-        accounts: {
-          create: {
-            provider: {
-              connectOrCreate: {
-                where: {
-                  name: 'LOCAL',
-                },
-                create: {
-                  name: 'LOCAL',
-                },
-              },
-            },
-          },
-        },
+      },
+      include: {
+        accounts: true,
       },
     });
 
+    // Check if user already has a local account.
+    if (user) {
+      await this.getOrCreateUserAccount(
+        { ...user, password: signupDto.password },
+        localProvider,
+      );
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+      };
+    }
+
+    // Creates the new user with his local account.
+    const newUser = await this.createUserAndAccount({
+      name: signupDto.name,
+      email: signupDto.email,
+      password: await bcrypt.hash(signupDto.password, 10),
+      accountProviderId: localProvider.id,
+    });
+
     return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      image: user.image,
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+      image: newUser.image,
     };
   }
 
@@ -84,14 +95,14 @@ export class AuthService {
       throw new BadRequestException(ERROR);
     }
 
-    const tokens = await this.getTokens({
+    const tokens = await this.createTokens({
       sub: user.id,
       name: user.name,
       email: user.email,
       image: user.image,
     });
 
-    await this.updateDbTokens(account.id, tokens);
+    await this.updateDbRefreshToken(account.id, tokens.refreshToken);
 
     return {
       user: {
@@ -132,14 +143,14 @@ export class AuthService {
 
     if (!rtMatches) throw new ForbiddenException('Access Denied.');
 
-    const tokens = await this.getTokens({
+    const tokens = await this.createTokens({
       sub: user.id,
       name: user.name,
       email: user.email,
       image: user.image,
     });
 
-    await this.updateDbTokens(account.id, tokens);
+    await this.updateDbRefreshToken(account.id, tokens.refreshToken);
 
     return {
       user: {
@@ -152,17 +163,131 @@ export class AuthService {
     };
   }
 
-  // Helpers ===>
-  private async updateDbTokens(accountId: string, tokens: Tokens) {
-    const hashedRefreshToken = await bcrypt.hash(tokens.refreshToken, 10);
+  async googleAuthCallback(req: AuthRequest) {
+    const { id, email, name, image, accounts } = req.user;
 
-    await this.prismaService.account.update({
-      where: { id: accountId },
-      data: { refreshToken: hashedRefreshToken },
+    const googleAccount = await this.prismaService.accountProvider.findUnique({
+      where: { name: 'google' },
+    });
+
+    const tokens = await this.createTokens({
+      sub: id,
+      email,
+      name,
+      image,
+    });
+
+    if (!tokens) {
+      return null;
+    }
+
+    const { id: googleAccountID } = accounts.find(
+      (acc) => acc.accountProviderId === googleAccount.id,
+    );
+
+    await this.updateDbRefreshToken(googleAccountID, tokens.refreshToken);
+
+    return tokens;
+  }
+
+  // Check if google provider already exists.
+  // If it does not exists, It will create it.
+  async getOrCreateAuthProvider(provider: Providers) {
+    const existsProvider = await this.prismaService.accountProvider.findUnique({
+      where: {
+        name: provider,
+      },
+    });
+
+    if (!existsProvider) {
+      const newProvider = await this.prismaService.accountProvider.create({
+        data: {
+          name: provider,
+        },
+      });
+      return newProvider;
+    }
+
+    return existsProvider;
+  }
+
+  // Check if user has account created.
+  // If does not have account, It will create it.
+  async getOrCreateUserAccount(
+    user: User & { accounts: Account[] },
+    provider: AccountProvider,
+  ) {
+    const userAccount = user.accounts.find(
+      (acc) => acc.accountProviderId === provider.id,
+    );
+
+    if (userAccount) return userAccount;
+
+    const { accounts: newAccount } = await this.prismaService.user.update({
+      where: { id: user.id },
+      data: {
+        password: await bcrypt.hash(user.password, 10),
+        accounts: {
+          create: {
+            accountProviderId: provider.id,
+          },
+        },
+      },
+      select: {
+        accounts: {
+          where: {
+            accountProviderId: provider.id,
+          },
+        },
+      },
+    });
+
+    return newAccount[0];
+  }
+
+  async createUserAndAccount({
+    name,
+    email,
+    image,
+    password,
+    accountProviderId,
+  }: {
+    name?: string | null;
+    email: string;
+    image?: string | null;
+    password: string;
+    accountProviderId: string;
+  }) {
+    return await this.prismaService.user.create({
+      data: {
+        name,
+        email,
+        image,
+        password,
+        accounts: {
+          create: {
+            accountProviderId,
+          },
+        },
+      },
+      include: {
+        accounts: true,
+      },
     });
   }
 
-  private async getTokens(jwtPayload: JwtPayload) {
+  // Helpers ===>
+  private async updateDbRefreshToken(
+    accountProviderId: string,
+    refreshToken: string,
+  ) {
+    await this.prismaService.account.update({
+      where: { id: accountProviderId },
+      data: { refreshToken: await bcrypt.hash(refreshToken, 10) },
+    });
+  }
+
+  private async createTokens(jwtPayload: JwtPayload) {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.get<string>('JWT_ACCESS_SECRET'),

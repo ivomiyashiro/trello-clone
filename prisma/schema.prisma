@@ -8,21 +8,21 @@ datasource db {
 }
 
 enum Providers {
-  LOCAL
-  GOOGLE
-  GITHUB
+  local
+  google
+  github
 }
 
 model Account {
-  id           String  @id @default(cuid())
-  userId       String
-  providerId   String
-  refreshToken String?
+  id                String  @id @default(cuid())
+  userId            String
+  accountProviderId String
+  refreshToken      String?
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider Provider @relation(fields: [providerId], references: [id])
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountProvider AccountProvider @relation(fields: [accountProviderId], references: [id])
 
-  @@map("accounts")
+  @@map("Accounts")
 }
 
 model User {
@@ -34,16 +34,16 @@ model User {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
 
-  accounts  Account[]
+  accounts Account[]
 
-  @@map("users")
+  @@map("Users")
 }
 
-model Provider {
-  id      String    @id @default(cuid())
-  name    Providers @unique
+model AccountProvider {
+  id   String    @id @default(cuid())
+  name Providers @unique
 
   accounts Account[]
 
-  @@map("providers")
+  @@map("AccountsProviders")
 }
