@@ -6,9 +6,15 @@ import { PrismaModule } from './lib/prisma/prisma.module';
 import { AccessTokenGuard } from './lib/guards';
 
 import { AuthModule } from './auth/auth.module';
+import { PrivateModule } from './private/private.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    PrismaModule,
+    AuthModule,
+    PrivateModule,
+  ],
   providers: [
     {
       // All routes must have access_token to work
