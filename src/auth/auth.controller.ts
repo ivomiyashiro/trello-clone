@@ -20,7 +20,7 @@ import { AuthRequest, JwtPayloadWithRt } from './auth.types';
 
 import { SignupDto, LoginDto } from './dtos';
 import { AuthService } from './auth.service';
-
+// TODO: Ver que pasa que se me updatea la password, cuando creo un usuario con github
 @Controller('/api/auth')
 export class AuthController {
   constructor(
@@ -92,19 +92,54 @@ export class AuthController {
 
   @Get('/providers/google')
   @Public()
-  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('google'))
+  @HttpCode(HttpStatus.OK)
   async googleAuth() {
     // This route will initiate the Google authentication flow.
   }
 
   @Get('/providers/google/callback')
   @Public()
-  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard('google'))
+  @HttpCode(HttpStatus.OK)
   async googleAuthCallback(@Req() req: AuthRequest, @Res() res: Response) {
     try {
-      const tokens = await this.authService.googleAuthCallback(req);
+      const tokens = await this.authService.providersAuthCallback(
+        req,
+        'google',
+      );
+
+      if (tokens) {
+        return res.redirect(
+          this.configService.get('CLIENT_BASE_URL') +
+            `?rt=${tokens.refreshToken}`,
+        );
+      }
+
+      return res.redirect(this.configService.get('CLIENT_BASE_URL'));
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @Get('/providers/github')
+  @Public()
+  @UseGuards(AuthGuard('github'))
+  @HttpCode(HttpStatus.OK)
+  async githubAuth() {
+    // This route will initiate the Github authentication flow.
+  }
+
+  @Get('/providers/github/callback')
+  @Public()
+  @UseGuards(AuthGuard('github'))
+  @HttpCode(HttpStatus.OK)
+  async githubAuthCallback(@Req() req: AuthRequest, @Res() res: Response) {
+    try {
+      const tokens = await this.authService.providersAuthCallback(
+        req,
+        'github',
+      );
 
       if (tokens) {
         return res.redirect(

@@ -6,6 +6,7 @@ import {
   AccessTokenStrategy,
   RefreshTokentStrategy,
   GoogleAuthStrategy,
+  GithubAuthStrategy,
 } from './strategy';
 
 import { AuthService } from './auth.service';
@@ -16,9 +17,10 @@ import { AuthController } from './auth.controller';
   controllers: [AuthController],
   providers: [
     AuthService,
-    GoogleAuthStrategy,
     AccessTokenStrategy,
     RefreshTokentStrategy,
+    GoogleAuthStrategy,
+    GithubAuthStrategy,
   ],
 })
 export class AuthModule {}

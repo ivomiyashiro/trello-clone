@@ -7,13 +7,14 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 
-import { Account, AccountProvider, Providers, User } from '@prisma/client';
+import { AccountProvider, Prisma, Providers, User } from '@prisma/client';
 import { AuthRequest, JwtPayload } from './auth.types';
 
 import { config } from 'src/lib/config/config';
 
 import { LoginDto, SignupDto } from './dtos';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
+import { generarPassword } from 'src/lib/utils/generatePassword';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +38,15 @@ export class AuthService {
 
     // Check if user already has a local account.
     if (user) {
-      await this.getOrCreateUserAccount(
+      const userAccount = user.accounts.find(
+        (acc) => acc.accountProviderId === localProvider.id,
+      );
+
+      if (userAccount) {
+        throw new BadRequestException('Email is already in use.');
+      }
+
+      await this.createUserAccount(
         { ...user, password: signupDto.password },
         localProvider,
       );
@@ -163,12 +172,12 @@ export class AuthService {
     };
   }
 
-  async googleAuthCallback(req: AuthRequest) {
+  async providersAuthCallback(req: AuthRequest, provider: Providers) {
     const { id, email, name, image, accounts } = req.user;
 
-    const googleAccount = await this.prismaService.accountProvider.findUnique({
-      where: { name: 'google' },
-    });
+    const providerAccount = await this.prismaService.accountProvider.findUnique(
+      { where: { name: provider } },
+    );
 
     const tokens = await this.createTokens({
       sub: id,
@@ -177,22 +186,66 @@ export class AuthService {
       image,
     });
 
-    if (!tokens) {
-      return null;
-    }
+    if (!tokens) return null;
 
-    const { id: googleAccountID } = accounts.find(
-      (acc) => acc.accountProviderId === googleAccount.id,
+    const { id: providerAccountID } = accounts.find(
+      (acc) => acc.accountProviderId === providerAccount.id,
     );
 
-    await this.updateDbRefreshToken(googleAccountID, tokens.refreshToken);
+    await this.updateDbRefreshToken(providerAccountID, tokens.refreshToken);
 
     return tokens;
   }
 
-  // Check if google provider already exists.
+  // This function is used in the providers auth strategies.
+  async getOrCreateUserAccount(
+    userData: Partial<User>,
+    accountProvider: Providers,
+  ) {
+    const authProvider = await this.getOrCreateAuthProvider(accountProvider);
+
+    const user = await this.prismaService.user.findUnique({
+      where: { email: userData.email },
+      include: { accounts: true },
+    });
+
+    if (!user) {
+      // Creates the new user with his provider account.
+      const newUser = await this.createUserAndAccount({
+        name: userData.name,
+        email: userData.email,
+        image: userData.image,
+        password: await bcrypt.hash(generarPassword(), 10),
+        accountProviderId: authProvider.id,
+      });
+
+      return newUser;
+    }
+
+    // Check if user has provider account created.
+    const userAccount = user.accounts.find(
+      (acc) => acc.accountProviderId === authProvider.id,
+    );
+
+    if (userAccount) return user;
+
+    // Creates a new provider account for the existing user.
+    const userWithNewAcc = await this.createUserAccount(
+      {
+        ...user,
+        image: user.image ? user.image : userData.image,
+      },
+      authProvider,
+    );
+
+    return userWithNewAcc;
+  }
+
+  // HELPERS ===>
+
+  // Check if provider already exists in accountProvider table.
   // If it does not exists, It will create it.
-  async getOrCreateAuthProvider(provider: Providers) {
+  private async getOrCreateAuthProvider(provider: Providers) {
     const existsProvider = await this.prismaService.accountProvider.findUnique({
       where: {
         name: provider,
@@ -211,41 +264,35 @@ export class AuthService {
     return existsProvider;
   }
 
-  // Check if user has account created.
-  // If does not have account, It will create it.
-  async getOrCreateUserAccount(
-    user: User & { accounts: Account[] },
-    provider: AccountProvider,
-  ) {
-    const userAccount = user.accounts.find(
-      (acc) => acc.accountProviderId === provider.id,
-    );
-
-    if (userAccount) return userAccount;
-
-    const { accounts: newAccount } = await this.prismaService.user.update({
-      where: { id: user.id },
-      data: {
-        password: await bcrypt.hash(user.password, 10),
-        accounts: {
-          create: {
-            accountProviderId: provider.id,
-          },
+  private async createUserAccount(user: User, provider: AccountProvider) {
+    let data: Prisma.UserUpdateInput = {
+      accounts: {
+        create: {
+          accountProviderId: provider.id,
         },
       },
-      select: {
-        accounts: {
-          where: {
-            accountProviderId: provider.id,
-          },
-        },
+    };
+
+    // If new account is local, update the password for the password given
+    if (provider.name === 'local') {
+      data = {
+        ...data,
+        password: await bcrypt.hash(user.password, 10),
+      };
+    }
+
+    const userWithNewAcc = await this.prismaService.user.update({
+      where: { id: user.id },
+      data,
+      include: {
+        accounts: true,
       },
     });
 
-    return newAccount[0];
+    return userWithNewAcc;
   }
 
-  async createUserAndAccount({
+  private async createUserAndAccount({
     name,
     email,
     image,
@@ -276,7 +323,6 @@ export class AuthService {
     });
   }
 
-  // Helpers ===>
   private async updateDbRefreshToken(
     accountProviderId: string,
     refreshToken: string,

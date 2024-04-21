@@ -2,17 +2,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
-import * as bcrypt from 'bcryptjs';
 
-import { PrismaService } from 'src/lib/prisma/prisma.service';
-import { generarPassword } from 'src/lib/utils/generatePassword';
 import { AuthService } from '../auth.service';
 
 @Injectable()
 export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
   constructor(
     public configService: ConfigService,
-    private prismaService: PrismaService,
     private authService: AuthService,
   ) {
     super({
@@ -36,35 +32,18 @@ export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
       const { provider, _json } = profile;
       const { name, email, picture } = _json;
 
-      const googleProvider = await this.authService.getOrCreateAuthProvider(
-        provider,
-      );
-
-      const user = await this.prismaService.user.findUnique({
-        where: {
-          email,
-        },
-        include: {
-          accounts: true,
-        },
-      });
-
-      // Check if user has google account created.
-      if (user) {
-        await this.authService.getOrCreateUserAccount(user, googleProvider);
-        return done(null, user);
-      }
-
-      // Creates the new user with his google account.
-      const newUser = await this.authService.createUserAndAccount({
+      const userData = {
         name,
         email,
         image: picture,
-        password: await bcrypt.hash(generarPassword(), 10),
-        accountProviderId: googleProvider.id,
-      });
+      };
 
-      done(null, newUser);
+      const user = await this.authService.getOrCreateUserAccount(
+        userData,
+        provider,
+      );
+
+      return done(null, user);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
