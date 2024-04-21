@@ -45,7 +45,6 @@ export class GithubAuthStrategy extends PassportStrategy(Strategy, 'github') {
 
       done(null, user);
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException(error);
     }
   }

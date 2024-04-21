@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 
 import { PrismaModule } from './lib/prisma/prisma.module';
-import { AccessTokenGuard } from './lib/utils/guards';
+import { AccessTokenGuard } from './lib/guards';
 
 import { AuthModule } from './auth/auth.module';
 

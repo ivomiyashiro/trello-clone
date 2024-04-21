@@ -13,14 +13,14 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 
-import { AuthUser, Public } from 'src/lib/utils/decorators';
-import { RefreshTokenGuard } from 'src/lib/utils/guards';
-
 import { AuthRequest, JwtPayloadWithRt } from './auth.types';
+
+import { AuthUser, Public } from 'src/lib/decorators';
+import { RefreshTokenGuard } from 'src/lib/guards';
 
 import { SignupDto, LoginDto } from './dtos';
 import { AuthService } from './auth.service';
-// TODO: Ver que pasa que se me updatea la password, cuando creo un usuario con github
+
 @Controller('/api/auth')
 export class AuthController {
   constructor(
