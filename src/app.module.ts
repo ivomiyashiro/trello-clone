@@ -3,10 +3,10 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 
 import { PrismaModule } from './lib/prisma/prisma.module';
-import { AccessTokenGuard } from './lib/guards';
+import { AccessTokenGuard } from './guards';
 
-import { AuthModule } from './auth/auth.module';
-import { PrivateModule } from './private/private.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { PrivateModule } from './modules/private/private.module';
 
 @Module({
   imports: [

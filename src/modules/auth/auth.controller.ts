@@ -15,8 +15,8 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { AuthRequest, JwtPayloadWithRt } from './auth.types';
 
-import { AuthUser, Public } from 'src/lib/decorators';
-import { RefreshTokenGuard } from 'src/lib/guards';
+import { AuthUser, Public } from 'src/decorators';
+import { RefreshTokenGuard } from 'src/guards';
 
 import { SignupDto, LoginDto } from './dtos';
 import { AuthService } from './auth.service';
