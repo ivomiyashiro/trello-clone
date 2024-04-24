@@ -10,11 +10,12 @@ import * as bcrypt from 'bcryptjs';
 import { AccountProvider, Prisma, Providers, User } from '@prisma/client';
 import { AuthRequest, JwtPayload } from './auth.types';
 
-import { config } from 'src/config/config';
+import { config } from '../../config/config';
 
 import { LoginDto, SignupDto } from './dtos';
-import { PrismaService } from 'src/lib/prisma/prisma.service';
-import { generarPassword } from 'src/utils/generatePassword';
+
+import { PrismaService } from '../../lib/prisma/prisma.service';
+import { generarPassword } from '../../utils/generatePassword';
 
 @Injectable()
 export class AuthService {
