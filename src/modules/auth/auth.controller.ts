@@ -82,12 +82,16 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
   async generateToken(@AuthUser() { sub, refreshToken }: JwtPayloadWithRt) {
-    const data = await this.authService.generateToken(sub, refreshToken);
+    try {
+      const data = await this.authService.generateToken(sub, refreshToken);
 
-    return {
-      ok: true,
-      data,
-    };
+      return {
+        ok: true,
+        data,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
   @Get('/providers/google')
