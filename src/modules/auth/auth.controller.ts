@@ -15,8 +15,8 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { AuthRequest, JwtPayloadWithRt } from './auth.types';
 
-import { AuthUser, Public } from 'src/decorators';
-import { RefreshTokenGuard } from 'src/guards';
+import { AuthUser, Public } from '../../decorators';
+import { RefreshTokenGuard } from '../../guards';
 
 import { SignupDto, LoginDto } from './dtos';
 import { AuthService } from './auth.service';
@@ -42,7 +42,7 @@ export class AuthController {
         },
       };
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -61,7 +61,7 @@ export class AuthController {
         },
       };
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -73,7 +73,7 @@ export class AuthController {
 
       return { ok: true };
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -118,7 +118,7 @@ export class AuthController {
 
       return res.redirect(this.configService.get('CLIENT_BASE_URL'));
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 
@@ -150,7 +150,7 @@ export class AuthController {
 
       return res.redirect(this.configService.get('CLIENT_BASE_URL'));
     } catch (error) {
-      return error;
+      throw error;
     }
   }
 }

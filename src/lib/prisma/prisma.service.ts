@@ -8,12 +8,19 @@ export class PrismaService extends PrismaClient {
     super({
       datasources: {
         db: {
-          url:
-            process.env.NODE_ENV === 'development'
-              ? config.get('DATABASE_URL_DEVELOPMENT')
-              : config.get('DATABASE_URL_PRODUCTION'),
+          url: config.get('DATABASE_URL'),
         },
       },
     });
+  }
+
+  async cleanDatabase() {
+    if (process.env.NODE_ENV === 'production') return;
+
+    return this.$transaction([
+      this.user.deleteMany(),
+      this.accountProvider.deleteMany(),
+      this.account.deleteMany(),
+    ]);
   }
 }
