@@ -133,7 +133,51 @@ describe('e2e', () => {
           .spec()
           .post('/auth/local/login')
           .withBody(dto)
-          .expectStatus(200);
+          .expectStatus(200)
+          .stores('userId', 'data.user.id')
+          .stores('accessToken', 'data.tokens.accessToken');
+      });
+    });
+  });
+
+  describe('Users', () => {
+    describe('Get User', () => {
+      it('should throw an error if token was not provided', () => {
+        return pactum
+          .spec()
+          .get('/users/{id}')
+          .withPathParams('id', '$S{userId}')
+          .expectStatus(401);
+      });
+
+      it('should throw an error if wrong token was provided', () => {
+        return pactum
+          .spec()
+          .get('/users/{id}')
+          .withPathParams('id', '$S{userId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}:C' })
+          .expectStatus(401);
+      });
+
+      it('should return null if userId is wrong', () => {
+        return pactum
+          .spec()
+          .get('/users/{id}')
+          .withPathParams('id', 'wrongId')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200)
+          .expectJsonMatch({ data: { user: null } })
+          .inspect();
+      });
+
+      it('should return the last user created', () => {
+        return pactum
+          .spec()
+          .get('/users/{id}')
+          .withPathParams('id', '$S{userId}')
+          .withHeaders({ Authorization: 'Bearer $S{accessToken}' })
+          .expectStatus(200)
+          .expectJsonMatch({ data: { user: { id: '$S{userId}' } } });
       });
     });
   });
