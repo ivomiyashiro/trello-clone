@@ -116,7 +116,7 @@ export class AuthService {
 
     return {
       user: {
-        id: user.name,
+        id: user.id,
         name: user.name,
         email: user.email,
         image: user.image,
