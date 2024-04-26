@@ -6,14 +6,14 @@ import { PrismaModule } from './lib/prisma/prisma.module';
 import { AccessTokenGuard } from './guards';
 
 import { AuthModule } from './modules/auth/auth.module';
-import { PrivateModule } from './modules/private/private.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
-    PrivateModule,
+    UserModule,
   ],
   providers: [
     {
