@@ -10,7 +10,7 @@ async function bootstrap() {
   // CORS config.
   app.enableCors({
     credentials: true,
-    origin: [`http://localhost:${PORT}`],
+    origin: [`http://localhost:${PORT}`, process.env.BASE_URL],
   });
 
   // Ensures all endpoints are protected from receiving incorrect data.
