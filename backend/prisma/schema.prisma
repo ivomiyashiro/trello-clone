@@ -13,6 +13,11 @@ enum Providers {
   github
 }
 
+enum WorkSpaceRole {
+  admin
+  user
+}
+
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -34,7 +39,8 @@ model User {
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
 
-  accounts Account[]
+  workspacesMember WorkSpaceMember[]
+  accounts         Account[]
 
   @@map("Users")
 }
@@ -46,4 +52,77 @@ model AccountProvider {
   accounts Account[]
 
   @@map("AccountsProviders")
+}
+
+model WorkSpace {
+  id   String @id @default(cuid())
+  name String
+
+  workspacesMembers WorkSpaceMember[]
+  boards            Board[]
+
+  @@map("Workspaces")
+}
+
+model WorkSpaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkSpaceRole
+
+  cardComments CardCommet[]
+  user         User         @relation(fields: [userId], references: [id])
+  workspace    WorkSpace    @relation(fields: [workspaceId], references: [id])
+
+  @@map("WorkspaceMembers")
+}
+
+model Board {
+  id          String @id @default(cuid())
+  name        String
+  workspaceId String
+
+  boardLists BoardList[]
+  workspace  WorkSpace   @relation(fields: [workspaceId], references: [id])
+
+  @@map("Boards")
+}
+
+model BoardList {
+  id      String @id @default(cuid())
+  name    String
+  number  Int
+  boardId String
+
+  cards Card[]
+  board Board  @relation(fields: [boardId], references: [id])
+
+  @@map("BoardsLists")
+}
+
+model Card {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime?
+  endDate     DateTime?
+  boardListId String
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @default(now())
+
+  boardList BoardList @relation(fields: [boardListId], references: [id])
+
+  @@map("Cards")
+}
+
+model CardCommet {
+  id                String    @id @default(cuid())
+  content           String
+  workspaceMemberId String
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @default(now())
+
+  workspaceMember WorkSpaceMember @relation(fields: [workspaceMemberId], references: [id])
+
+  @@map("CardsComments")
 }
