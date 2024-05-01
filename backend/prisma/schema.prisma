@@ -71,15 +71,15 @@ model WorkspaceMember {
   role        WorkSpaceRole
 
   cardComments CardCommet[]
-  user         User         @relation(fields: [userId], references: [id])
-  workspace    Workspace    @relation(fields: [workspaceId], references: [id])
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@map("WorkspaceMembers")
 }
 
 model WorkspaceInvitation {
   fromWorkspaceMemberId String
-  toWorkspaceMemberId String
+  toWorkspaceMemberId   String
 
   @@id([fromWorkspaceMemberId, toWorkspaceMemberId])
 }
@@ -90,7 +90,7 @@ model Board {
   workspaceId String
 
   boardLists BoardList[]
-  workspace  Workspace   @relation(fields: [workspaceId], references: [id])
+  workspace  Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@map("Boards")
 }
@@ -102,7 +102,7 @@ model BoardList {
   boardId String
 
   cards Card[]
-  board Board  @relation(fields: [boardId], references: [id])
+  board Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@map("BoardsLists")
 }
@@ -117,7 +117,8 @@ model Card {
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @default(now())
 
-  boardList BoardList @relation(fields: [boardListId], references: [id])
+  cardComments CardCommet[]
+  boardList    BoardList    @relation(fields: [boardListId], references: [id], onDelete: Cascade)
 
   @@map("Cards")
 }
@@ -126,9 +127,11 @@ model CardCommet {
   id                String    @id @default(cuid())
   content           String
   workspaceMemberId String
+  cardId            String
   createdAt         DateTime? @default(now())
   updatedAt         DateTime? @default(now())
 
+  card            Card            @relation(fields: [cardId], references: [id], onDelete: Cascade)
   workspaceMember WorkspaceMember @relation(fields: [workspaceMemberId], references: [id])
 
   @@map("CardsComments")
