@@ -67,9 +67,9 @@ export class AuthController {
 
   @Post('/logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@AuthUser('sub') accountId: string) {
+  async logout(@AuthUser('sub') userId: string) {
     try {
-      await this.authService.logout(accountId);
+      await this.authService.logout(userId);
 
       return { ok: true };
     } catch (error) {
