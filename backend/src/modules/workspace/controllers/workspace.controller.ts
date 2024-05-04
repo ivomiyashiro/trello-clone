@@ -10,12 +10,13 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthUser, WorkspaceAdmin } from 'src/decorators';
 import { WorkspaceService } from '../services';
 import { WorkspaceDto } from '../dtos';
 
 @ApiTags('Workspace')
+@ApiBearerAuth()
 @Controller('/api/workspace')
 export class WorkspaceController {
   constructor(private workspaceService: WorkspaceService) {}

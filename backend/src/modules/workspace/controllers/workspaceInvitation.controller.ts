@@ -9,12 +9,13 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthUser, WorkspaceAdmin } from 'src/decorators';
 import { WorkspaceInvitationService } from '../services';
 import { WorkspaceInvitationDto } from '../dtos';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Workspace invitations')
+@ApiBearerAuth()
 @Controller('/api/workspace')
 export class WorkspaceInvitationController {
   constructor(private workspaceInvitationService: WorkspaceInvitationService) {}

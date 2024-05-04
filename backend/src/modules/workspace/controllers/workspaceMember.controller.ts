@@ -6,11 +6,12 @@ import {
   HttpStatus,
   Param,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthUser } from 'src/decorators';
 import { WorkspaceMemberService } from '../services';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Workspace members')
+@ApiBearerAuth()
 @Controller('/api/workspace')
 export class WorkspaceMemberController {
   constructor(private workspaceMemberService: WorkspaceMemberService) {}
