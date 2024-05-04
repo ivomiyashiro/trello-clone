@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { WorkspaceRole } from '@prisma/client';
 
-import { CHECK_IF_ADMIN_MEMBER } from 'src/decorators';
+import { CHECK_IF_USER_IS_ADMIN_MEMBER } from 'src/decorators';
 
 import { PrismaService } from 'src/lib/prisma/prisma.service';
 
@@ -15,7 +15,7 @@ export class WorkspaceAdminGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const checkIfAdminMember = this.reflector.getAllAndOverride(
-      CHECK_IF_ADMIN_MEMBER,
+      CHECK_IF_USER_IS_ADMIN_MEMBER,
       [context.getHandler(), context.getClass()],
     );
 
