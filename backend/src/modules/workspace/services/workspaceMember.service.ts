@@ -54,14 +54,10 @@ export class WorkspaceMemberService {
   }
 
   async getWorkspaceAdmin(workspaceId: string) {
-    const workspaceAdmin = await this.prismaService.workspace.findUnique({
+    const workspaceAdmin = await this.prismaService.workspaceMember.findFirst({
       where: {
-        id: workspaceId,
-        workspacesMembers: {
-          some: {
-            role: WorkspaceRole.admin,
-          },
-        },
+        workspaceId,
+        role: WorkspaceRole.admin,
       },
     });
 
