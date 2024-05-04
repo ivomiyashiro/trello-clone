@@ -1,10 +1,28 @@
 import { Module } from '@nestjs/common';
-import { WorkspaceController } from './workspace.controller';
-import { WorkspaceService } from './workspace.service';
+
+import {
+  WorkspaceController,
+  WorkspaceMemberController,
+  WorkspaceInvitationController,
+} from './controllers';
+
+import {
+  WorkspaceService,
+  WorkspaceMemberService,
+  WorkspaceInvitationService,
+} from './services';
 
 @Module({
   imports: [],
-  controllers: [WorkspaceController],
-  providers: [WorkspaceService],
+  controllers: [
+    WorkspaceController,
+    WorkspaceMemberController,
+    WorkspaceInvitationController,
+  ],
+  providers: [
+    WorkspaceService,
+    WorkspaceMemberService,
+    WorkspaceInvitationService,
+  ],
 })
-export class UserModule {}
+export class WorkspaceModule {}

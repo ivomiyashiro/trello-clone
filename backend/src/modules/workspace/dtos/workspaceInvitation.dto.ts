@@ -1,7 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { WorkspaceInvitationState } from '@prisma/client';
 
-export class WorkspaceInvitationPutDto {
+export class WorkspaceInvitationDto {
   @IsNotEmpty()
   @IsString()
   fromWorkspaceMemberId: string;
@@ -9,8 +8,4 @@ export class WorkspaceInvitationPutDto {
   @IsNotEmpty()
   @IsString()
   toUserId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  state: WorkspaceInvitationState;
 }

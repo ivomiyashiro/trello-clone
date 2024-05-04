@@ -2,11 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 
+import { AccessTokenGuard, WorkspaceAdminGuard } from './guards';
+
 import { PrismaModule } from './lib/prisma/prisma.module';
-import { AccessTokenGuard } from './guards';
 
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { WorkspaceModule } from './modules/workspace/workspace.module';
 
 @Module({
   imports: [
@@ -14,6 +16,7 @@ import { UserModule } from './modules/user/user.module';
     PrismaModule,
     AuthModule,
     UserModule,
+    WorkspaceModule,
   ],
   providers: [
     {
@@ -21,6 +24,12 @@ import { UserModule } from './modules/user/user.module';
       // Unless they have @Public() decorator
       provide: APP_GUARD,
       useClass: AccessTokenGuard,
+    },
+    {
+      // Routes with @WorkspaceAdmin() can only be acceed
+      // by the workspace admin.
+      provide: APP_GUARD,
+      useClass: WorkspaceAdminGuard,
     },
   ],
 })
