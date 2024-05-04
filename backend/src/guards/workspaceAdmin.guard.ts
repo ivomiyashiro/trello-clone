@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { WorkspaceRole } from '@prisma/client';
 
@@ -38,9 +43,9 @@ export class WorkspaceAdminGuard implements CanActivate {
       },
     });
 
-    if (!workspaceId) return false;
-
-    if (!userAdminMember) return false;
+    if (!workspaceId || !userAdminMember) {
+      throw new UnauthorizedException('Only workspace admin is allowed.');
+    }
 
     return true;
   }
