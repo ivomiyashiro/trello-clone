@@ -3,7 +3,11 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { WorkspaceInvitationState, WorkspaceRole } from '@prisma/client';
+import {
+  Prisma,
+  WorkspaceInvitationState,
+  WorkspaceRole,
+} from '@prisma/client';
 
 import { PrismaService } from 'src/lib/prisma/prisma.service';
 
@@ -26,7 +30,7 @@ export class WorkspaceInvitationService {
       workspaceId,
     );
 
-    if (workspaceAdmin.id === userId) {
+    if (workspaceAdmin.userId !== userId) {
       throw new UnauthorizedException(
         'Only the workspace admin can send invitations.',
       );
@@ -56,11 +60,29 @@ export class WorkspaceInvitationService {
   }
 
   async findManyWorkspaceInvitations(userId: string, workspaceId: string) {
-    const invitations = await this.prismaService.workspaceInvitation.findMany({
-      where: {
+    const workspaceAdmin = await this.workspaceMemberService.getWorkspaceAdmin(
+      workspaceId,
+    );
+
+    let where: Prisma.WorkspaceInvitationWhereInput;
+
+    // When it's admin, list all invitation (pendings and accepted)
+    if (workspaceAdmin.userId === userId) {
+      where = {
+        fromWorkspaceMemberId: workspaceAdmin.id,
+      };
+      // When it's user, list only pending's user invitations
+    } else {
+      where = {
         user: {
           id: userId,
         },
+      };
+    }
+
+    const invitations = await this.prismaService.workspaceInvitation.findMany({
+      where: {
+        ...where,
         workspaceMember: {
           workspace: {
             id: workspaceId,
@@ -95,11 +117,34 @@ export class WorkspaceInvitationService {
       );
     }
 
+    const invitationToDelete =
+      await this.prismaService.workspaceInvitation.findUnique({
+        where: {
+          id: {
+            fromWorkspaceMemberId,
+            toUserId,
+          },
+        },
+      });
+
+    if (invitationToDelete === null) {
+      throw new BadRequestException('Invitation does not exists.');
+    }
+
+    if (invitationToDelete.state === WorkspaceInvitationState.accepted) {
+      throw new BadRequestException('Accepted invitations can not be deleted.');
+    }
+
     await this.prismaService.workspaceInvitation.delete({
       where: {
         id: {
           fromWorkspaceMemberId,
           toUserId,
+        },
+        state: {
+          not: {
+            equals: WorkspaceInvitationState.accepted,
+          },
         },
       },
     });
