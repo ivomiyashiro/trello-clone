@@ -74,8 +74,8 @@ export class WorkspaceInvitationController {
   async deleteWorkspaceInvitation(
     @AuthUser('sub') userId: string,
     @Param('workspaceId') workspaceId: string,
-    @Param('workspaceId') fromWorkspaceMemberId: string,
-    @Param('workspaceId') toUserId: string,
+    @Param('fromWorkspaceMemberId') fromWorkspaceMemberId: string,
+    @Param('toUserId') toUserId: string,
   ) {
     try {
       await this.workspaceInvitationService.deleteWorkspaceInvitation(
@@ -87,7 +87,7 @@ export class WorkspaceInvitationController {
 
       return {
         ok: true,
-        message: `Invitation has been successfully sent.`,
+        message: `Invitation has been successfully deleted.`,
       };
     } catch (error) {
       throw error;
@@ -99,8 +99,8 @@ export class WorkspaceInvitationController {
   async acceptWorkspaceInvitation(
     @AuthUser('sub') userId: string,
     @Param('workspaceId') workspaceId: string,
-    @Param('workspaceId') fromWorkspaceMemberId: string,
-    @Param('workspaceId') toUserId: string,
+    @Param('fromWorkspaceMemberId') fromWorkspaceMemberId: string,
+    @Param('toUserId') toUserId: string,
   ) {
     try {
       await this.workspaceInvitationService.acceptWorkspaceInvitation(
