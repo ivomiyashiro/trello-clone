@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
 import { AuthRequest, JwtPayloadWithRt } from './auth.types';
 
@@ -21,6 +22,7 @@ import { RefreshTokenGuard } from '../../guards';
 import { SignupDto, LoginDto } from './dtos';
 import { AuthService } from './auth.service';
 
+@ApiTags('Auth')
 @Controller('/api/auth')
 export class AuthController {
   constructor(

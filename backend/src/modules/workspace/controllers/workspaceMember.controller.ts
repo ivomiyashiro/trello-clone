@@ -8,7 +8,9 @@ import {
 } from '@nestjs/common';
 import { AuthUser } from 'src/decorators';
 import { WorkspaceMemberService } from '../services';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Workspace members')
 @Controller('/api/workspace')
 export class WorkspaceMemberController {
   constructor(private workspaceMemberService: WorkspaceMemberService) {}

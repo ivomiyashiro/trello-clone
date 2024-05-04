@@ -12,7 +12,9 @@ import {
 import { AuthUser, WorkspaceAdmin } from 'src/decorators';
 import { WorkspaceInvitationService } from '../services';
 import { WorkspaceInvitationDto } from '../dtos';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Workspace invitations')
 @Controller('/api/workspace')
 export class WorkspaceInvitationController {
   constructor(private workspaceInvitationService: WorkspaceInvitationService) {}

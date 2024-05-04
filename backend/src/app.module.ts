@@ -7,7 +7,6 @@ import { AccessTokenGuard, WorkspaceAdminGuard } from './guards';
 import { PrismaModule } from './lib/prisma/prisma.module';
 
 import { AuthModule } from './modules/auth/auth.module';
-import { UserModule } from './modules/user/user.module';
 import { WorkspaceModule } from './modules/workspace/workspace.module';
 
 @Module({
@@ -15,7 +14,6 @@ import { WorkspaceModule } from './modules/workspace/workspace.module';
     ConfigModule.forRoot({ isGlobal: true }),
     PrismaModule,
     AuthModule,
-    UserModule,
     WorkspaceModule,
   ],
   providers: [
