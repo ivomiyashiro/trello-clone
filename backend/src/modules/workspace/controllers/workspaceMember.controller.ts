@@ -12,7 +12,7 @@ import { WorkspaceMemberService } from '../services';
 
 @ApiTags('Workspace members')
 @ApiBearerAuth()
-@Controller('/api/workspace')
+@Controller('/api/workspaces')
 export class WorkspaceMemberController {
   constructor(private workspaceMemberService: WorkspaceMemberService) {}
 

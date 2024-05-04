@@ -16,7 +16,7 @@ import { WorkspaceInvitationDto } from '../dtos';
 
 @ApiTags('Workspace invitations')
 @ApiBearerAuth()
-@Controller('/api/workspace')
+@Controller('/api/workspaces')
 export class WorkspaceInvitationController {
   constructor(private workspaceInvitationService: WorkspaceInvitationService) {}
 

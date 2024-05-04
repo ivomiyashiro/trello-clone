@@ -17,7 +17,7 @@ import { WorkspaceDto } from '../dtos';
 
 @ApiTags('Workspace')
 @ApiBearerAuth()
-@Controller('/api/workspace')
+@Controller('/api/workspaces')
 export class WorkspaceController {
   constructor(private workspaceService: WorkspaceService) {}
 
