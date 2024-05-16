@@ -1,11 +1,13 @@
 import { useContext } from "react";
-import { ThemeContext } from "@/context";
+import { AuthContext } from "@/context";
 
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
+const useAuth = () => {
+  const context = useContext(AuthContext);
 
   if (context === undefined)
     throw new Error("useTheme must be used within a ThemeProvider");
 
   return context;
 };
+
+export default useAuth;

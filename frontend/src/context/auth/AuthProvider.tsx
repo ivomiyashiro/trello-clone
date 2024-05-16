@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useState, useMemo } from "react";
+import { useReducer, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 
 import { User } from "@/types";
@@ -12,6 +12,7 @@ import {
 } from "@/services";
 
 import { AuthContext, authReducer } from "./";
+import { useSearchParams } from "react-router-dom";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, {
@@ -19,10 +20,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     accessToken: null,
     isAuthenticating: true,
   });
-  const queryParams = useMemo(
-    () => new URLSearchParams(window.location.search),
-    [],
-  );
+  const [searchParams] = useSearchParams();
   const [keepRenewing, setKeepRenewing] = useState(true);
 
   const isAuthenticatingTo = (value: boolean) => {
@@ -57,8 +55,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let refreshToken = Cookies.get("REFRESH_TOKEN") as string;
 
     // Gets "rt" in searchParams when user use providers authtentications
-    if (queryParams.get("rt")) {
-      refreshToken = queryParams.get("rt") as string;
+    if (searchParams.get("rt")) {
+      refreshToken = searchParams.get("rt") as string;
       window.history.replaceState(null, "", "/");
     }
 
@@ -72,7 +70,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setKeepRenewing(false);
       })
       .finally(() => isAuthenticatingTo(false));
-  }, [queryParams]);
+  }, [searchParams]);
 
   // Renews token
   useEffect(() => {
