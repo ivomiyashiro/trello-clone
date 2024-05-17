@@ -5,6 +5,8 @@ import { config } from "@/config";
 import { User } from "@/types";
 import { useAuth } from "@/hooks";
 
+import AuthLayout from "@/pages/(auth)/AuthLayout";
+import DashboardLayout from "@/pages/(dashboard)/DashboardLayout";
 import { Landing, Login, Signup, Dashboard } from "@/pages";
 
 const AuthRoutes = ({ user }: { user: User | null }) => {
@@ -12,7 +14,11 @@ const AuthRoutes = ({ user }: { user: User | null }) => {
     return <Navigate to={config.ALREADY_AUTH_REDIRECT} replace />;
   }
 
-  return <Outlet />;
+  return (
+    <AuthLayout>
+      <Outlet />
+    </AuthLayout>
+  );
 };
 
 const ProtectedRoutes = ({ user }: { user: User | null }) => {
@@ -20,7 +26,11 @@ const ProtectedRoutes = ({ user }: { user: User | null }) => {
     return <Navigate to={config.UNAUTHORIZED_REDIRECT} replace />;
   }
 
-  return <Outlet />;
+  return (
+    <DashboardLayout>
+      <Outlet />
+    </DashboardLayout>
+  );
 };
 
 const AppRouter = () => {
