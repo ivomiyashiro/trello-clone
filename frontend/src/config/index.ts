@@ -12,4 +12,8 @@ export const config = {
   // JWT Exp time
   REFRESH_TOKEN_EXP: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week
   ACCESS_TOKEN_EXP: 60 * 1000 * 14, // 14 minutes
+
+  // Redirections
+  ALREADY_AUTH_REDIRECT: "/dashboard",
+  UNAUTHORIZED_REDIRECT: "/auth/login",
 };

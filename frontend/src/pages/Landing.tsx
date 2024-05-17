@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { useTheme } from "@/hooks";
 import { Button, buttonVariants } from "@/components/ui";
 
-const Hero = () => {
+const Landing = () => {
   const { toggleTheme } = useTheme();
 
   return (
-    <div className="flex items-center gap-10">
+    <div className="flex h-screen items-center justify-center gap-10">
       <Button onClick={toggleTheme}>theme</Button>
       <Link
         to={"/auth/login"}
@@ -14,8 +14,14 @@ const Hero = () => {
       >
         Login
       </Link>
+      <Link
+        to={"/dashboard"}
+        className={buttonVariants({ variant: "default" })}
+      >
+        Dashboard
+      </Link>
     </div>
   );
 };
 
-export default Hero;
+export default Landing;
