@@ -7,7 +7,7 @@ type Options = {
 };
 
 export const baseService = async (url: string, options: Options = {}) => {
-  const { BASE_API_URL } = config;
+  const BASE_API_URL = config.URLS.BASE_API_URL;
 
   try {
     const { method = "GET", token, data } = options;

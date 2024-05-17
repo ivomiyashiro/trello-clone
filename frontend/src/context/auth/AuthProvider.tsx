@@ -36,7 +36,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     Cookies.set("REFRESH_TOKEN", tokens.refresh_token, {
       sameSite: "strict",
-      expires: config.REFRESH_TOKEN_EXP,
+      expires: config.AUTH.JWT.REFRESH_TOKEN_EXP,
     });
 
     dispatch({
@@ -87,7 +87,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setKeepRenewing(false);
         removeTokensAndLogout();
       }
-    }, config.ACCESS_TOKEN_EXP);
+    }, config.AUTH.JWT.ACCESS_TOKEN_EXP);
 
     return () => clearInterval(renewInterval);
   }, [state.user, keepRenewing]);

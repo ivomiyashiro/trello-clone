@@ -11,7 +11,7 @@ import { Landing, Login, Signup, Dashboard } from "@/pages";
 
 const AuthRoutes = ({ user }: { user: User | null }) => {
   if (user) {
-    return <Navigate to={config.ALREADY_AUTH_REDIRECT} replace />;
+    return <Navigate to={config.REDIRECTIONS.ALREADY_AUTH_REDIRECT} replace />;
   }
 
   return (
@@ -23,7 +23,7 @@ const AuthRoutes = ({ user }: { user: User | null }) => {
 
 const ProtectedRoutes = ({ user }: { user: User | null }) => {
   if (!user) {
-    return <Navigate to={config.UNAUTHORIZED_REDIRECT} replace />;
+    return <Navigate to={config.REDIRECTIONS.UNAUTHORIZED_REDIRECT} replace />;
   }
 
   return (
