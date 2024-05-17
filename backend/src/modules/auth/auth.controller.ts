@@ -117,12 +117,12 @@ export class AuthController {
 
       if (tokens) {
         return res.redirect(
-          this.configService.get('CLIENT_BASE_URL') +
+          this.configService.get('BASE_CLIENT_URL') +
             `?rt=${tokens.refreshToken}`,
         );
       }
 
-      return res.redirect(this.configService.get('CLIENT_BASE_URL'));
+      return res.redirect(this.configService.get('BASE_CLIENT_URL'));
     } catch (error) {
       throw error;
     }
@@ -149,12 +149,12 @@ export class AuthController {
 
       if (tokens) {
         return res.redirect(
-          this.configService.get('CLIENT_BASE_URL') +
+          this.configService.get('BASE_CLIENT_URL') +
             `?rt=${tokens.refreshToken}`,
         );
       }
 
-      return res.redirect(this.configService.get('CLIENT_BASE_URL'));
+      return res.redirect(this.configService.get('BASE_CLIENT_URL'));
     } catch (error) {
       throw error;
     }
