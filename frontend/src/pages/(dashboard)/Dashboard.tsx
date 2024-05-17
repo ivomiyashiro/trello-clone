@@ -1,5 +1,9 @@
+import { useAuth } from "@/hooks";
+import { Button } from "@/components/ui";
+
 const Dashboard = () => {
-  return <div>Dashboard</div>;
+  const { logout } = useAuth();
+  return <Button onClick={logout}>Logout</Button>;
 };
 
 export default Dashboard;

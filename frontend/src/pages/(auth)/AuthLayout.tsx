@@ -1,5 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
+
 import { config } from "@/config";
+
+import { AppLogo } from "@/components";
 import { buttonVariants } from "@/components/ui";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
@@ -15,6 +18,9 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="mx-auto flex h-screen w-full max-w-[30em] items-center justify-center px-4 md:px-8 lg:px-12">
       <div className="flex w-full flex-col">
+        <div className="mb-12 flex justify-center">
+          <AppLogo />
+        </div>
         {children}
         <div className="mt-4">
           <Link

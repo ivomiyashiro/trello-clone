@@ -1,4 +1,5 @@
 import { useReducer, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
 
 import { User } from "@/types";
@@ -12,7 +13,6 @@ import {
 } from "@/services";
 
 import { AuthContext, authReducer } from "./";
-import { useSearchParams } from "react-router-dom";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, dispatch] = useReducer(authReducer, {
@@ -32,9 +32,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const saveTokensAndLoginUser = (
     user: User,
-    tokens: { access_token: string; refresh_token: string },
+    tokens: { accessToken: string; refreshToken: string },
   ) => {
-    Cookies.set("REFRESH_TOKEN", tokens.refresh_token, {
+    Cookies.set("REFRESH_TOKEN", tokens.refreshToken, {
       sameSite: "strict",
       expires: config.AUTH.JWT.REFRESH_TOKEN_EXP,
     });
@@ -64,7 +64,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     isAuthenticatingTo(true);
     generateToken(refreshToken)
-      .then((resp) => console.log(resp))
+      .then(({ data }) => {
+        saveTokensAndLoginUser(data.user, data.tokens);
+      })
       .catch(() => {
         removeTokensAndLogout();
         setKeepRenewing(false);
