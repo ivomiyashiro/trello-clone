@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/hooks";
 import { signupScheme } from "@/lib/schemes";
@@ -7,6 +8,7 @@ import { handleError } from "@/helpers/handleError";
 
 const useSignup = () => {
   const { signup } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +31,7 @@ const useSignup = () => {
     try {
       signupScheme.parse(formData);
       await signup(formData);
+      navigate("/auth/login");
     } catch (error) {
       handleError(error);
     } finally {
