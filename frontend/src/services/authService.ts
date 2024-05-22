@@ -1,4 +1,4 @@
-import { baseService } from "./_baseService";
+import { apiService } from "./_apiService";
 
 export const login = async ({
   email,
@@ -7,7 +7,7 @@ export const login = async ({
   email: string;
   password: string;
 }) => {
-  return await baseService("/auth/local/login", {
+  return await apiService("/auth/local/login", {
     method: "POST",
     data: {
       email,
@@ -25,7 +25,7 @@ export const signup = async ({
   email: string;
   password: string;
 }) => {
-  return await baseService("/auth/local/signup", {
+  return await apiService("/auth/local/signup", {
     method: "POST",
     data: {
       name,
@@ -36,7 +36,7 @@ export const signup = async ({
 };
 
 export const logout = async (userId: string, token?: string) => {
-  return await baseService("/auth/logout", {
+  return await apiService("/auth/logout", {
     method: "POST",
     token,
     data: {
@@ -46,7 +46,7 @@ export const logout = async (userId: string, token?: string) => {
 };
 
 export const generateToken = async (token: string) => {
-  return await baseService("/auth/generateToken", {
+  return await apiService("/auth/generateToken", {
     method: "POST",
     token,
   });

@@ -25,4 +25,9 @@ export const config = {
     ALREADY_AUTH_REDIRECT: "/dashboard",
     UNAUTHORIZED_REDIRECT: "/auth/login",
   },
+
+  // Cookies
+  COOKIES: {
+    REFRESH_TOKEN: "REFRESH_TOKEN",
+  },
 };

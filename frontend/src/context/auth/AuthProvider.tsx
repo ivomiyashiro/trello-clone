@@ -123,15 +123,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: string;
     password: string;
   }) => {
-    try {
-      const { user } = await signupService({ name, email, password });
-
-      return user;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-    }
+    const { user } = await signupService({ name, email, password });
+    return user;
   };
 
   const logout = async () => {
