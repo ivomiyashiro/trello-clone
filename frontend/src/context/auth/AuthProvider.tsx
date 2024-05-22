@@ -64,8 +64,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     isAuthenticatingTo(true);
     generateToken(refreshToken)
-      .then(({ data }) => {
-        saveTokensAndLoginUser(data.user, data.tokens);
+      .then(({ user, tokens }) => {
+        saveTokensAndLoginUser(user, tokens);
       })
       .catch(() => {
         removeTokensAndLogout();
