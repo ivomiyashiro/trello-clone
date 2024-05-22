@@ -30,5 +30,5 @@ export const apiService = async (url: string, options: Options = {}) => {
 
   const { data: response } = await axios(reqOptions);
 
-  return response;
+  return response.data;
 };

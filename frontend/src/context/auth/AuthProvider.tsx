@@ -83,7 +83,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const renewInterval = setInterval(async () => {
       try {
         const { user, tokens } = await generateToken(REFRESH_TOKEN);
-
         saveTokensAndLoginUser(user, tokens);
       } catch (error) {
         setKeepRenewing(false);
@@ -101,17 +100,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     email: string;
     password: string;
   }) => {
-    try {
-      const { user, tokens } = await loginService({ email, password });
+    const { user, tokens } = await loginService({ email, password });
+    saveTokensAndLoginUser(user, tokens);
 
-      saveTokensAndLoginUser(user, tokens);
-
-      return user;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-    }
+    return user;
   };
 
   const signup = async ({
@@ -128,18 +120,12 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    try {
-      if (state.accessToken) {
-        await logoutService(state.accessToken);
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      }
-    } finally {
-      removeTokensAndLogout();
-      window.location.replace("/");
+    if (state.accessToken) {
+      await logoutService(state.accessToken);
     }
+
+    removeTokensAndLogout();
+    window.location.replace("/");
   };
 
   return (

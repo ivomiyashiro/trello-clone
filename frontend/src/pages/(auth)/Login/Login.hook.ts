@@ -1,15 +1,14 @@
 import { useState } from "react";
 
 import { useAuth } from "@/hooks";
-import { signupScheme } from "@/lib/schemes";
 
+import { loginScheme } from "@/lib/schemes";
 import { handleError } from "@/helpers/handleError";
 
-const useSignup = () => {
-  const { signup } = useAuth();
+const useLogin = () => {
+  const { login } = useAuth();
 
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
@@ -27,8 +26,8 @@ const useSignup = () => {
     setLoading(true);
 
     try {
-      signupScheme.parse(formData);
-      await signup(formData);
+      loginScheme.parse(formData);
+      await login(formData);
     } catch (error) {
       handleError(error);
     } finally {
@@ -43,4 +42,4 @@ const useSignup = () => {
   };
 };
 
-export default useSignup;
+export default useLogin;

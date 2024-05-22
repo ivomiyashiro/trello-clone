@@ -1,1 +1,1 @@
-export * from "./signup.scheme";
+export * from "./auth.scheme";
