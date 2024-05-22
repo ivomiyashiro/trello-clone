@@ -1,6 +1,6 @@
 import { apiService } from "./_apiService";
 
-export const login = async ({
+export const loginService = async ({
   email,
   password,
 }: {
@@ -16,7 +16,7 @@ export const login = async ({
   });
 };
 
-export const signup = async ({
+export const signupService = async ({
   name,
   email,
   password,
@@ -35,7 +35,7 @@ export const signup = async ({
   });
 };
 
-export const logout = async (userId: string, token?: string) => {
+export const logoutService = async (userId: string, token?: string) => {
   return await apiService("/auth/logout", {
     method: "POST",
     token,
@@ -45,7 +45,7 @@ export const logout = async (userId: string, token?: string) => {
   });
 };
 
-export const generateToken = async (token: string) => {
+export const generateTokenService = async (token: string) => {
   return await apiService("/auth/generateToken", {
     method: "POST",
     token,

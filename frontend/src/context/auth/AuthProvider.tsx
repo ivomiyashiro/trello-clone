@@ -6,10 +6,10 @@ import { User } from "@/types";
 import { config } from "@/config";
 
 import {
-  generateToken,
-  login as loginService,
-  logout as logoutService,
-  signup as signupService,
+  generateTokenService,
+  loginService,
+  logoutService,
+  signupService,
 } from "@/services";
 
 import { AuthContext, authReducer } from "./";
@@ -63,7 +63,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (!refreshToken) return isAuthenticatingTo(false);
 
     isAuthenticatingTo(true);
-    generateToken(refreshToken)
+    generateTokenService(refreshToken)
       .then(({ user, tokens }) => {
         saveTokensAndLoginUser(user, tokens);
       })
@@ -82,7 +82,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const renewInterval = setInterval(async () => {
       try {
-        const { user, tokens } = await generateToken(REFRESH_TOKEN);
+        const { user, tokens } = await generateTokenService(REFRESH_TOKEN);
         saveTokensAndLoginUser(user, tokens);
       } catch (error) {
         setKeepRenewing(false);
