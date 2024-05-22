@@ -11,7 +11,7 @@ const App = () => {
     <BrowserRouter>
       <ThemeProvider defaultTheme="system" storageKey="ui-theme">
         <AuthProvider>
-          <Suspense fallback={"Cargando..."}>
+          <Suspense fallback={"Loading..."}>
             <AppRouter />
           </Suspense>
         </AuthProvider>

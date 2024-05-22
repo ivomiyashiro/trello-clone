@@ -31,7 +31,7 @@ const Signup = () => {
         onChange={handleInputChange}
       />
       <Button className="mt-6" disabled={isLoading}>
-        {isLoading ? "Cargando..." : "Sign up"}
+        {isLoading ? "Loading..." : "Sign up"}
       </Button>
     </form>
   );

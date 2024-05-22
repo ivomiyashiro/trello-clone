@@ -1,19 +1,26 @@
 import { Link, useLocation } from "react-router-dom";
 
+import { useAuth } from "@/hooks";
 import { config } from "@/config";
 
-import { AppLogo } from "@/components";
 import { buttonVariants } from "@/components/ui";
+import { AppLogo } from "@/components";
+
+const GITHUB_AUTH_URL = config.URLS.AUTH_URLS.GITHUB_AUTH_URL;
+const GOOGLE_AUTH_URL = config.URLS.AUTH_URLS.GOOGLE_AUTH_URL;
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   const { pathname } = useLocation();
+  const { isAuthenticating } = useAuth();
+
+  if (isAuthenticating) {
+    return "Loading...";
+  }
+
   const to = pathname.includes("signup") ? "/auth/login" : "/auth/signup";
   const buttonText = pathname.includes("signup")
     ? "Already have an account"
     : "Create an account";
-
-  const GITHUB_AUTH_URL = config.URLS.AUTH_URLS.GITHUB_AUTH_URL;
-  const GOOGLE_AUTH_URL = config.URLS.AUTH_URLS.GOOGLE_AUTH_URL;
 
   return (
     <div className="mx-auto flex h-screen w-full max-w-[30em] items-center justify-center px-4 md:px-8 lg:px-12">
