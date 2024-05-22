@@ -30,7 +30,9 @@ const Signup = () => {
         placeholder="Type your password..."
         onChange={handleInputChange}
       />
-      <Button className="mt-6">{isLoading ? "Cargando..." : "Sign up"}</Button>
+      <Button className="mt-6" disabled={isLoading}>
+        {isLoading ? "Cargando..." : "Sign up"}
+      </Button>
     </form>
   );
 };
