@@ -1,7 +1,8 @@
 import { AxiosError } from "axios";
 import { ZodError } from "zod";
 
-import { toast, ToastErrorContent, ToastProps } from "@/components/ui";
+import { toast, ToastProps } from "@/components/ui";
+import { ToastErrorContent } from "@/components";
 
 export const handleError = (error: unknown) => {
   const toasConfig: ToastProps = {
