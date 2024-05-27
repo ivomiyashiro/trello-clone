@@ -4,3 +4,4 @@ export * from "./label";
 export * from "./toaster";
 export * from "./toast";
 export * from "./use-toast";
+export * from "./loader";

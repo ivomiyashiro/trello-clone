@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks";
 
 import { loginScheme } from "@/lib/schemes";
-import { handleError } from "@/helpers/handleError";
+import { handleError } from "@/helpers";
 
 const useLogin = () => {
   const { login } = useAuth();

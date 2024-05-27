@@ -41,7 +41,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     dispatch({
       type: "LOGIN",
-      payload: user,
+      payload: {
+        user,
+        accessToken: tokens.accessToken,
+      },
     });
   };
 

@@ -1,9 +1,8 @@
 import { User } from "@/types";
 
 export type AuthActionType =
-  | { type: "LOGIN"; payload: User }
+  | { type: "LOGIN"; payload: { user: User; accessToken: string } }
   | { type: "LOGOUT" }
-  | { type: "ACCESS TOKEN"; payload: string }
   | { type: "IS AUTHENTICATING"; payload: boolean };
 
 export interface AuthState {
@@ -17,25 +16,21 @@ const authReducer = (state: AuthState, action: AuthActionType): AuthState => {
     case "LOGIN":
       return {
         ...state,
-        user: action.payload,
+        user: action.payload.user,
+        accessToken: action.payload.accessToken,
       };
 
     case "LOGOUT":
       return {
         ...state,
         user: null,
+        accessToken: null,
       };
 
     case "IS AUTHENTICATING":
       return {
         ...state,
         isAuthenticating: action.payload,
-      };
-
-    case "ACCESS TOKEN":
-      return {
-        ...state,
-        accessToken: action.payload,
       };
 
     default:

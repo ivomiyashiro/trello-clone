@@ -1,5 +1,6 @@
-import { Button, Input } from "@/components/ui";
+import { Loader } from "lucide-react";
 import useLogin from "./Login.hook";
+import { Button, Input } from "@/components/ui";
 
 const Login = () => {
   const { isLoading, handleInputChange, handleSubmit } = useLogin();
@@ -23,7 +24,7 @@ const Login = () => {
         onChange={handleInputChange}
       />
       <Button className="mt-6" disabled={isLoading}>
-        {isLoading ? "Loading..." : "Log in"}
+        {isLoading ? <Loader /> : "Log in"}
       </Button>
     </form>
   );

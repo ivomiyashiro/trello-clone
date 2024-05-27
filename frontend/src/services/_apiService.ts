@@ -3,7 +3,7 @@ import { config } from "@/config";
 
 type Options = {
   method?: "POST" | "GET" | "PUT" | "DELETE";
-  token?: string;
+  token?: string | null;
   data?: unknown;
 };
 

@@ -16,7 +16,7 @@ export const handleError = (error: unknown) => {
 
     return toast({
       ...toasConfig,
-      title: `${displayErrors.length} errors found:`,
+      title: `${displayErrors.length} Error/s found:`,
       description: <ToastErrorContent errors={displayErrors} />,
     });
   }

@@ -7,45 +7,94 @@ import { useAuth } from "@/hooks";
 
 import AuthLayout from "@/pages/(auth)/AuthLayout";
 import DashboardLayout from "@/pages/(dashboard)/DashboardLayout";
-import { Landing, Login, Signup, Dashboard } from "@/pages";
+import { Landing, Login, Signup, OnBoarding, Workspace } from "@/pages";
 
-const AuthRoutes = ({ user }: { user: User | null }) => {
+interface WrapperProps {
+  user: User | null;
+  isAuthenticating: boolean;
+  withLayout?: boolean;
+}
+
+const AuthWrapper = ({
+  user,
+  isAuthenticating,
+  withLayout = true,
+}: WrapperProps) => {
+  if (isAuthenticating) {
+    return <></>;
+  }
+
   if (user) {
     return <Navigate to={config.REDIRECTIONS.ALREADY_AUTH_REDIRECT} replace />;
   }
 
-  return (
-    <AuthLayout>
-      <Outlet />
-    </AuthLayout>
-  );
+  if (withLayout) {
+    return (
+      <AuthLayout>
+        <Outlet />
+      </AuthLayout>
+    );
+  }
+
+  return <Outlet />;
 };
 
-const ProtectedRoutes = ({ user }: { user: User | null }) => {
+const ProtectedWrapper = ({
+  user,
+  isAuthenticating,
+  withLayout = true,
+}: WrapperProps) => {
+  if (isAuthenticating) {
+    return <></>;
+  }
+
   if (!user) {
     return <Navigate to={config.REDIRECTIONS.UNAUTHORIZED_REDIRECT} replace />;
   }
 
-  return (
-    <DashboardLayout>
-      <Outlet />
-    </DashboardLayout>
-  );
+  if (withLayout) {
+    return (
+      <DashboardLayout>
+        <Outlet />
+      </DashboardLayout>
+    );
+  }
+
+  return <Outlet />;
 };
 
 const AppRouter = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticating } = useAuth();
 
   return (
     <>
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route element={<AuthRoutes user={user} />}>
+        <Route
+          element={
+            <AuthWrapper user={user} isAuthenticating={isAuthenticating} />
+          }
+        >
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/signup" element={<Signup />} />
         </Route>
-        <Route element={<ProtectedRoutes user={user} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          element={
+            <ProtectedWrapper
+              user={user}
+              isAuthenticating={isAuthenticating}
+              withLayout={false}
+            />
+          }
+        >
+          <Route path="/onboarding" element={<OnBoarding />} />
+        </Route>
+        <Route
+          element={
+            <ProtectedWrapper user={user} isAuthenticating={isAuthenticating} />
+          }
+        >
+          <Route path="/workspace/:id" element={<Workspace />} />
         </Route>
       </Routes>
     </>

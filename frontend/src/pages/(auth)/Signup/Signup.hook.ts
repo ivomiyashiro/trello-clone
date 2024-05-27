@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks";
 import { signupScheme } from "@/lib/schemes";
 
-import { handleError } from "@/helpers/handleError";
+import { handleError } from "@/helpers";
 
 const useSignup = () => {
   const { signup } = useAuth();
