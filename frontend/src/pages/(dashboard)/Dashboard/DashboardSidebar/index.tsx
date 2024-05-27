@@ -23,7 +23,7 @@ const SIDEBAR_ITEMS = [
 
 const DashboardSidebar = () => {
   return (
-    <aside className="fixed left-0 grid h-screen w-[90px] grid-rows-[auto_1fr] border-r md:w-[250px]">
+    <aside className="fixed left-0 grid h-[calc(100vh-57px)] w-[90px] grid-rows-[auto_1fr] border-r md:w-[250px]">
       <div className="border-b p-2">
         <WorkspaceButton />
       </div>
