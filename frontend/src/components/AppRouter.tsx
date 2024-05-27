@@ -5,9 +5,8 @@ import { config } from "@/config";
 import { User } from "@/types";
 import { useAuth } from "@/hooks";
 
-import AuthLayout from "@/pages/(auth)/AuthLayout";
-import DashboardLayout from "@/pages/(dashboard)/DashboardLayout";
-import { Landing, Login, Signup, OnBoarding, Workspace } from "@/pages";
+import { DashboardLayout, AuthLayout } from "@/components/layouts";
+import * as Page from "@/pages";
 
 interface WrapperProps {
   user: User | null;
@@ -69,14 +68,14 @@ const AppRouter = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Page.Landing />} />
         <Route
           element={
             <AuthWrapper user={user} isAuthenticating={isAuthenticating} />
           }
         >
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/signup" element={<Signup />} />
+          <Route path="/auth/login" element={<Page.Login />} />
+          <Route path="/auth/signup" element={<Page.Signup />} />
         </Route>
         <Route
           element={
@@ -87,14 +86,16 @@ const AppRouter = () => {
             />
           }
         >
-          <Route path="/onboarding" element={<OnBoarding />} />
+          <Route path="/onboarding" element={<Page.OnBoarding />} />
         </Route>
         <Route
           element={
             <ProtectedWrapper user={user} isAuthenticating={isAuthenticating} />
           }
         >
-          <Route path="/workspace/:id" element={<Workspace />} />
+          <Route path="/workspace/:id" element={<Page.Workspace />} />
+          <Route path="/workspace/:id/members" element={<Page.Members />} />
+          <Route path="/workspace/:id/tables" element={<Page.Tables />} />
         </Route>
       </Routes>
     </>
