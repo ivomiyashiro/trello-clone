@@ -93,9 +93,15 @@ const AppRouter = () => {
             <ProtectedWrapper user={user} isAuthenticating={isAuthenticating} />
           }
         >
-          <Route path="/workspace/:id" element={<Page.Workspace />} />
-          <Route path="/workspace/:id/members" element={<Page.Members />} />
-          <Route path="/workspace/:id/tables" element={<Page.Tables />} />
+          <Route path="/workspace/:workspaceId" element={<Page.Workspace />} />
+          <Route
+            path="/workspace/:workspaceId/members"
+            element={<Page.Members />}
+          />
+          <Route
+            path="/workspace/:workspaceId/tables"
+            element={<Page.Tables />}
+          />
         </Route>
       </Routes>
     </>

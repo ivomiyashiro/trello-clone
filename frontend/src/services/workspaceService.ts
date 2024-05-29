@@ -1,3 +1,4 @@
+import type { WorkspaceMember } from "@/types";
 import { apiService } from "./_apiService";
 
 export const createWorkspaceService = async (
@@ -51,4 +52,32 @@ export const deleteWorkspaceService = async (
     method: "DELETE",
     token,
   });
+};
+
+export const findManyWorkspaceMembersService = async (
+  { workspaceId }: { workspaceId: string },
+  token: string | null,
+): Promise<{
+  workspaceMembers: WorkspaceMember[];
+}> => {
+  return await apiService(`/workspaces/${workspaceId}/workspaceMembers`, {
+    method: "GET",
+    token,
+  });
+};
+
+export const deleteWorkspaceMemberService = async (
+  {
+    workspaceId,
+    workspaceMemberId,
+  }: { workspaceId: string; workspaceMemberId: string },
+  token: string | null,
+) => {
+  return await apiService(
+    `/workspaces/${workspaceId}/workspaceMembers/${workspaceMemberId}`,
+    {
+      method: "DELETE",
+      token,
+    },
+  );
 };

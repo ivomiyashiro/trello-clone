@@ -22,6 +22,15 @@ export class WorkspaceMemberService {
   async findManyWorkspaceMembers(userId: string, workspaceId: string) {
     const workspaceMembers = await this.prismaService.workspaceMember.findMany({
       where: { workspaceId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
     });
 
     const isMemberOfWorkspace = workspaceMembers.some(

@@ -7,3 +7,13 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface WorkspaceMember {
+  id: string;
+  role: "admin" | "user";
+  userId: string;
+  user: {
+    email: string;
+    name: string;
+  };
+}

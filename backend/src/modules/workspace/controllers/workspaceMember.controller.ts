@@ -16,7 +16,7 @@ import { WorkspaceMemberService } from '../services';
 export class WorkspaceMemberController {
   constructor(private workspaceMemberService: WorkspaceMemberService) {}
 
-  @Get('/:workspaceId/workspaceMembers/:workspaceMemberId')
+  @Get('/:workspaceId/workspaceMembers')
   @HttpCode(HttpStatus.OK)
   async findManyWorkspaceMembers(
     @AuthUser('sub') userId: string,
